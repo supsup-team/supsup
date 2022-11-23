@@ -57,22 +57,22 @@ function stopLive(context: vscode.ExtensionContext) {
 				if (err) {
 					vscode.window.showErrorMessage('Error: ' + err);
 				} else {
+					vscode.window.showInformationMessage('Live session stopped: ' + localStorage.getValue('name'));
 					localStorage.setValue('code', null);
 					localStorage.setValue('name', null);
-					vscode.window.showInformationMessage('Live session stopped: ' + localStorage.getValue('name'));
 				}
 			});
 		} else {
 			vscode.window.showErrorMessage('Class not found');
 		}
 	} else {
-		vscode.window.showErrorMessage('Class not found');
+		vscode.window.showErrorMessage('Login first');
 	}
 }
 
 export function activate(context: vscode.ExtensionContext) {
 	vscodeContext = context;
-	const localStorage = new LocalStorage(vscodeContext.workspaceState);
+	const localStorage = new LocalStorage(context.workspaceState);
 	localStorage.setValue('token', null);
 	localStorage.setValue('code', null);
 	localStorage.setValue('name', null);
@@ -114,8 +114,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 	let disposable2 = vscode.commands.registerCommand('supsup.logout', async () => {
 		if (localStorage.getValue('token')) {
-			localStorage.setValue('token', null);
 			stopLive(context);
+			localStorage.setValue('token', null);
 			vscode.window.showInformationMessage('Logged Out');
 		} else {
 			vscode.window.showErrorMessage('Not Logged In');
@@ -188,20 +188,29 @@ export function activate(context: vscode.ExtensionContext) {
 					} else {
 						localStorage.setValue('joinCode', codeInput);
 						vscode.window.showInformationMessage('Joined the class');
+						vscode.window.createWebviewPanel(
+							'join',
+							'Join',
+							vscode.ViewColumn.One,
+							{
+								enableScripts: true,
+								retainContextWhenHidden: true,
+							}
+						);
 					}
 				});
 			}
 		} else {
 			vscode.window.showErrorMessage('Logout first');
 		}
+	});
 
-		let disposable6 = vscode.commands.registerCommand('supsup.leave', async () => {
-			if (localStorage.getValue('joinCode')) {
-				localStorage.setValue('joinCode', null);
-				vscode.window.showInformationMessage('Left the class');
-			} else {
-				vscode.window.showErrorMessage('Not joined');
-			}
+	let disposable6 = vscode.commands.registerCommand('supsup.leave', async () => {
+		if (localStorage.getValue('joinCode')) {
+			localStorage.setValue('joinCode', null);
+			vscode.window.showInformationMessage('Left the class');
+		} else {
+			vscode.window.showErrorMessage('Not joined');
 		}
 	});
 
@@ -210,8 +219,9 @@ export function activate(context: vscode.ExtensionContext) {
 	vscodeContext.subscriptions.push(disposable3);
 	vscodeContext.subscriptions.push(disposable4);
 	vscodeContext.subscriptions.push(disposable5);
+	vscodeContext.subscriptions.push(disposable6);
 }
 
 export function deactivate() {
-	stopLive(vscodeContext as vscode.ExtensionContext);
+	stopLive(vscodeContext as vscode.ExtensionContext);	
 }

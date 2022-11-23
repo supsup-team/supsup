@@ -10,11 +10,19 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:supsup.login"
+    "onCommand:supsup.login",
+    "onCommand:supsup.logout",
+    "onCommand:supsup.start",
+    "onCommand:supsup.stop",
+    "onCommand:supsup.join"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
+      {
+        "command": "supsup.join",
+        "title": "supsup: Join"
+      },
       {
         "command": "supsup.login",
         "title": "supsup: Login"
@@ -30,10 +38,6 @@
       {
         "command": "supsup.stop",
         "title": "supsup: Stop"
-      },
-      {
-        "command": "supsup.status",
-        "title": "supsup: Status"
       }
     ]
   },
