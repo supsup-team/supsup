@@ -186,9 +186,7 @@ export function activate(context: vscode.ExtensionContext) {
 					if (err) {
 						vscode.window.showErrorMessage('Error: ' + err);
 					} else {
-						localStorage.setValue('joinCode', codeInput);
-						vscode.window.showInformationMessage('Joined the class');
-						vscode.window.createWebviewPanel(
+						const panel = vscode.window.createWebviewPanel(
 							'join',
 							'Join',
 							vscode.ViewColumn.One,
@@ -197,6 +195,9 @@ export function activate(context: vscode.ExtensionContext) {
 								retainContextWhenHidden: true,
 							}
 						);
+
+						panel.webview.html = `<iframe style="position:fixed; top:0; left:0; bottom:0; right:0; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;" src="http://localhost:8080/class?code=${codeInput}"></iframe>`;
+						vscode.window.showInformationMessage('Joined the class: ' + codeInput);
 					}
 				});
 			}
